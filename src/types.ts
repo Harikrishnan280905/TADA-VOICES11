@@ -1,0 +1,79 @@
+export interface SurveyResponse {
+  id: string;
+  phoneNumber: string;
+  name: string;
+  designation: 'AAO' | 'AHO' | 'AAO (AB)';
+  district: string;
+  block: string;
+  headquarters: string;
+  villages: number;
+  distance: number;
+  opinion: 'continue_no_changes' | 'changes_needed' | 'staff_not_merged' | 'old_uatt_continue';
+  changesNeeded?: 'villages_divided' | 'transfers_promotions' | 'other_suggestions';
+  otherSuggestion?: string;
+  email?: string;
+  createdAt: string; // ISO string or format
+}
+
+export type Language = 'en' | 'ta';
+
+export interface Translations {
+  title: string;
+  subtitle: string;
+  adminLogin: string;
+  logout: string;
+  clickToShare: string;
+  peopleSharedTitle: string;
+  introRights: string;
+  introDescription: string;
+  introGovtInfo: string;
+  introTogether: string;
+  footerLine1: string;
+  footerLine2: string;
+  footerReg: string;
+  footerEmail: string;
+  footerContact: string;
+  modalTitle: string;
+  phoneNumber: string;
+  sendOtp: string;
+  otpBox: string;
+  verifyOtp: string;
+  otpVerified: string;
+  otpPlaceholder: string;
+  invalidOtp: string;
+  name: string;
+  designation: string;
+  district: string;
+  block: string;
+  headquarters: string;
+  numberOfVillages: string;
+  farthestDistance: string;
+  opinionTitle: string;
+  opinionOpt1: string;
+  opinionOpt2: string;
+  opinionOpt3: string;
+  opinionOpt4: string;
+  changesNeededTitle: string;
+  changesNeededOpt1: string;
+  changesNeededOpt2: string;
+  changesNeededOpt3: string;
+  otherSuggestPlaceholder: string;
+  submitBtn: string;
+  successTitle: string;
+  successMessage: string;
+  okBtn: string;
+  cancelBtn: string;
+  selectDesignation: string;
+  selectDistrict: string;
+  adminTitle: string;
+  adminEmail: string;
+  adminPassword: string;
+  adminLoginBtn: string;
+  accessDenied: string;
+  adminDashboardTitle: string;
+  searchPlaceholder: string;
+  filterByOpinion: string;
+  allOpinions: string;
+  exportBtn: string;
+  noResponses: string;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "UATT 2.0 - Opinion Movement",
+  "description": "Opinion Movement Survey website for the Tamil Nadu Agriculture Diploma Holders Association (TADA)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

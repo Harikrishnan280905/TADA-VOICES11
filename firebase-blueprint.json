@@ -1,0 +1,32 @@
+{
+  "entities": {
+    "SurveyResponse": {
+      "title": "SurveyResponse",
+      "description": "User survey response about the UATT 2.0 agricultural welfare scheme",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique response identifier" },
+        "phoneNumber": { "type": "string", "description": "10-digit primary mobile contact of the officer" },
+        "name": { "type": "string", "description": "Full name of the officer" },
+        "designation": { "type": "string", "enum": ["AAO", "AHO", "AAO (AB)"], "description": "Designation details" },
+        "district": { "type": "string", "description": "Tamil Nadu geographical district" },
+        "block": { "type": "string", "description": "Block name under the district" },
+        "headquarters": { "type": "string", "description": "Assigned headquarter name" },
+        "villages": { "type": "number", "description": "Number of villages under the charge" },
+        "distance": { "type": "number", "description": "Farthest village distance from headquarters in KM" },
+        "opinion": { "type": "string", "enum": ["continue_no_changes", "changes_needed", "staff_not_merged", "old_uatt_continue"], "description": "Selected main policy opinion option" },
+        "changesNeeded": { "type": "string", "enum": ["villages_divided", "transfers_promotions", "other_suggestions"], "description": "If changes are needed, what sub-category is selected" },
+        "otherSuggestion": { "type": "string", "description": "Free text other suggestions from the officer" },
+        "email": { "type": "string", "description": "Verified Google authentication email string" },
+        "createdAt": { "type": "string", "description": "Timestamp ISO string of the submission" }
+      },
+      "required": ["id", "phoneNumber", "name", "designation", "district", "block", "headquarters", "villages", "distance", "opinion", "createdAt"]
+    }
+  },
+  "firestore": {
+    "responses/{responseId}": {
+      "schema": "SurveyResponse",
+      "description": "Collection of all registered survey opinions"
+    }
+  }
+}
