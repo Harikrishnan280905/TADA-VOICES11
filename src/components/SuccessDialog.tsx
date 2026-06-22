@@ -45,7 +45,7 @@ export const SuccessDialog: React.FC<SuccessDialogProps> = ({ isOpen, onClose, u
           <p id="success-subheader" className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium px-1">
             {language === 'ta' ? (
               <>
-                மிக்க நன்றி, <span className="text-[#00b27a] font-bold text-sm select-all">{displayUser}</span>! உங்கள் கருத்து பதிவு செய்யப்பட்டுள்ளது. பதிவு செய்யப்பட்ட தமிழ்நாடு விவசாய பட்டயதாரி சங்கங்களின் கூட்டமைப்பு (டாடா) மூலம் உங்கள் குரல் அரசுக்கு சமர்ப்பிக்கப்படும்.
+                மிக்க நன்றி, <span className="text-[#00b27a] font-bold text-sm select-all">{displayUser}</span>! உங்கள் கருத்து பதிவு செய்யப்பட்டுள்ளது. பதிவு செய்யப்பட்ட தமிழ்நாடு விவசாய பட்டதாரிகள் சங்கம் (டாடா) மூலம் உங்கள் குரல் அரசுக்கு சமர்ப்பிக்கப்படும்.
               </>
             ) : (
               <>
