@@ -12,6 +12,8 @@ export interface SurveyResponse {
   changesNeeded?: 'villages_divided' | 'transfers_promotions' | 'other_suggestions';
   otherSuggestion?: string;
   email?: string;
+  uid?: string;
+  googleDisplayName?: string;
   createdAt: string; // ISO string or format
 }
 

@@ -24,7 +24,7 @@ export const LanguageToggle: React.FC = () => {
       />
 
       <span className={`z-10 flex-1 text-center text-[9px] font-black tracking-wider select-none transition-colors duration-300 ${language === 'en' ? 'text-white' : 'text-slate-400'}`}>
-        EN
+        ENG
       </span>
       <span className={`z-10 flex-1 text-center text-[9px] font-black tracking-wider select-none transition-colors duration-300 ${language === 'ta' ? 'text-white' : 'text-slate-400'}`}>
         தமிழ்

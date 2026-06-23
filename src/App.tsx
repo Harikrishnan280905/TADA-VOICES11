@@ -9,6 +9,7 @@ import { SuccessDialog } from './components/SuccessDialog';
 import { AdminLogin } from './components/AdminLogin';
 import { AdminDashboard } from './components/AdminDashboard';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
+import { auth, firebaseService } from './services/firebase';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -21,6 +22,23 @@ function AppContent() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
     return localStorage.getItem('uatt_admin_session') === 'active';
   });
+
+  const handleShareThoughtsClick = async () => {
+    if (auth.currentUser) {
+      setIsSurveyOpen(true);
+    } else {
+      try {
+        const user = await firebaseService.signInWithGoogle();
+        if (user) {
+          setIsSurveyOpen(true);
+        }
+      } catch (err) {
+        console.error("Google login failed/closed:", err);
+        // Still open modal so the user gets error display and can retry or see domain authorization instructions
+        setIsSurveyOpen(true);
+      }
+    }
+  };
 
   const handleAdminLoginSuccess = () => {
     setIsAdminLoggedIn(true);
@@ -67,7 +85,7 @@ function AppContent() {
           <div className="animate-fadeIn py-8">
             
             {/* Core Hero Component containing intro, live counter & action button */}
-            <Hero onShareThoughtsClick={() => setIsSurveyOpen(true)} />
+            <Hero onShareThoughtsClick={handleShareThoughtsClick} />
 
           </div>
         )}

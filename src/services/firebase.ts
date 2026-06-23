@@ -11,6 +11,15 @@ import {
   query,
   getDocFromServer
 } from 'firebase/firestore';
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut
+} from 'firebase/auth';
 
 // Real product credentials provided by the user
 const firebaseConfig = {
@@ -25,6 +34,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 // Invariant: Validate Connection to Firestore on initial boot
 async function testConnection() {
@@ -69,12 +79,12 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
-      userId: null,
-      email: null,
-      emailVerified: null,
-      isAnonymous: null,
+      userId: auth.currentUser?.uid || null,
+      email: auth.currentUser?.email || null,
+      emailVerified: auth.currentUser?.emailVerified || null,
+      isAnonymous: auth.currentUser?.isAnonymous || null,
       tenantId: null,
-      providerInfo: []
+      providerInfo: auth.currentUser?.providerData || []
     },
     operationType,
     path
@@ -92,6 +102,10 @@ interface FirebaseService {
   subscribeToResponses: (callback: (responses: SurveyResponse[]) => void) => () => void;
   sendMockOTP: (phoneNumber: string) => Promise<{ success: boolean; verificationId: string }>;
   verifyMockOTP: (verificationId: string, otp: string) => Promise<{ success: boolean }>;
+  signInWithGoogle: () => Promise<{ email: string; displayName: string }>;
+  signInWithEmailPassword: (email: string, password: string) => Promise<{ email: string; displayName: string }>;
+  registerWithEmailPassword: (email: string, password: string, name: string) => Promise<{ email: string; displayName: string }>;
+  signOutUser: () => Promise<void>;
 }
 
 export const firebaseService: FirebaseService = {
@@ -121,7 +135,7 @@ export const firebaseService: FirebaseService = {
     };
 
     try {
-      // 1. Double check duplicate emails directly from latest remote state for hard constraint
+      // 1. Get current responses directly from latest remote state for strict validation
       const colRef = collection(db, 'responses');
       const snapshot = await getDocs(colRef);
       const responses: SurveyResponse[] = [];
@@ -129,6 +143,7 @@ export const firebaseService: FirebaseService = {
         responses.push(docSnap.data() as SurveyResponse);
       });
 
+      // 2. Strict Duplicate checks: Email and Mobile Number constraints
       if (response.email) {
         const targetEmail = response.email.toLowerCase().trim();
         const isDuplicate = responses.some(
@@ -141,6 +156,18 @@ export const firebaseService: FirebaseService = {
         }
       }
 
+      if (response.phoneNumber) {
+        const targetPhone = response.phoneNumber.trim();
+        const isDuplicatePhone = responses.some(
+          (r) => r.phoneNumber && r.phoneNumber.trim() === targetPhone
+        );
+        if (isDuplicatePhone) {
+          throw new Error(
+            'You have already submitted an assessment under this mobile number. Limit is one response per mobile number.'
+          );
+        }
+      }
+
       // Sanitize fields to ensure no keys have "undefined" values (which Firestore does not allow)
       const cleanedResponse = Object.entries(newResponse).reduce((acc, [key, value]) => {
         if (value !== undefined) {
@@ -149,11 +176,11 @@ export const firebaseService: FirebaseService = {
         return acc;
       }, {} as any);
 
-      // 2. Commit write to Firestore
+      // 3. Commit write to Firestore
       await setDoc(doc(db, 'responses', newId), cleanedResponse);
       return newResponse;
     } catch (error) {
-      if (error instanceof Error && error.message.includes('already submitted')) {
+      if (error instanceof Error && (error.message.includes('already submitted') || error.message.includes('Limit is one'))) {
         throw error;
       }
       handleFirestoreError(error, OperationType.WRITE, `responses/${newId}`);
@@ -221,5 +248,55 @@ export const firebaseService: FirebaseService = {
       return { success: true };
     }
     return { success: false };
+  },
+
+  signInWithGoogle: async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    try {
+      const result = await signInWithPopup(auth, provider);
+      return {
+        email: result.user.email || '',
+        displayName: result.user.displayName || result.user.email?.split('@')[0] || 'User'
+      };
+    } catch (error: any) {
+      console.error('Google Sign-In popup failed:', error);
+      throw error;
+    }
+  },
+
+  signInWithEmailPassword: async (email, password) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+      return {
+        email: result.user.email || '',
+        displayName: result.user.displayName || result.user.email?.split('@')[0] || 'User'
+      };
+    } catch (error: any) {
+      console.error('Email Sign-In failed:', error);
+      throw error;
+    }
+  },
+
+  registerWithEmailPassword: async (email, password, name) => {
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateProfile(result.user, { displayName: name.trim() });
+      return {
+        email: result.user.email || '',
+        displayName: name.trim()
+      };
+    } catch (error: any) {
+      console.error('Email Registration failed:', error);
+      throw error;
+    }
+  },
+
+  signOutUser: async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   }
 };

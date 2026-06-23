@@ -45,11 +45,11 @@ export const SuccessDialog: React.FC<SuccessDialogProps> = ({ isOpen, onClose, u
           <p id="success-subheader" className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium px-1">
             {language === 'ta' ? (
               <>
-                மிக்க நன்றி, <span className="text-[#00b27a] font-bold text-sm select-all">{displayUser}</span>! உங்கள் கருத்து பதிவு செய்யப்பட்டுள்ளது. பதிவு செய்யப்பட்ட தமிழ்நாடு விவசாய பட்டயதாரிகள் சங்கம் (டாடா) மூலம் உங்கள் குரல் அரசுக்கு சமர்ப்பிக்கப்படும்.
+                மிக்க நன்றி, <span className="text-[#00b27a] font-bold text-sm select-all">{displayUser}</span>! உங்கள் கருத்து பதிவு செய்யப்பட்டுள்ளது. பதிவு செய்யப்பட்ட தமிழ்நாடு அரசு விவசாய பட்டயதாரிகள் சங்கம் (டாடா) மூலம் உங்கள் குரல் அரசுக்கு சமர்ப்பிக்கப்படும்.
               </>
             ) : (
               <>
-                Thank you, <span className="text-[#00b27a] font-black text-sm select-all">{displayUser}</span>! Your opinion has been registered. Your voice will be submitted to the Government through the <strong>Tamil Nadu Agriculture Diploma Holders Association (TADA)</strong>.
+                Thank you, <span className="text-[#00b27a] font-black text-sm select-all">{displayUser}</span>! Your opinion has been registered. Your voice will be submitted to the Government through the <strong>Tamil Nadu Government Agriculture Diploma Holders Association (TADA)</strong>.
               </>
             )}
           </p>

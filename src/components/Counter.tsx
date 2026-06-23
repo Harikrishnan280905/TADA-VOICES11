@@ -23,25 +23,25 @@ export const Counter: React.FC = () => {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       id="live-counter-card" 
-      className="flex flex-col items-start p-2.5 px-3.5 md:p-3 md:px-4 rounded-xl bg-gradient-to-br from-blue-955/45 to-indigo-955/20 border border-blue-500/20 shadow-2xl max-w-xs w-full my-2 text-left relative overflow-hidden backdrop-blur-md group hover:border-blue-400/40 transition-colors duration-300"
+      className="flex flex-col items-start p-5 px-6 md:p-6 md:px-8 rounded-2xl bg-gradient-to-br from-blue-955/60 to-indigo-955/35 border border-blue-500/30 shadow-2xl max-w-sm w-full my-4 text-left relative overflow-hidden backdrop-blur-md group hover:border-blue-400/50 transition-colors duration-300"
     >
       {/* Visual Ambient glow inside card */}
-      <div className="absolute -right-16 -top-16 w-28 h-28 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/15 transition-colors duration-300"></div>
+      <div className="absolute -right-16 -top-16 w-36 h-36 bg-blue-500/15 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors duration-300"></div>
 
-      <div className="flex items-center gap-1.5 mb-1 z-10">
-        <div className="relative flex h-1.5 w-1.5">
+      <div className="flex items-center gap-2 mb-1.5 z-10">
+        <div className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
         </div>
-        <p className="text-[9px] uppercase tracking-widest text-blue-400 font-extrabold font-mono flex items-center gap-1">
-          <Radio className="w-3 h-3 animate-pulse text-blue-400" />
+        <p className="text-xs uppercase tracking-widest text-blue-400 font-extrabold font-mono flex items-center gap-1.5">
+          <Radio className="w-3.5 h-3.5 animate-pulse text-blue-400" />
           {t.peopleSharedTitle}
         </p>
       </div>
 
-      <div className="flex items-center gap-2.5 z-10 w-full mt-1">
-        <div className="p-1.5 rounded-md bg-blue-500/10 border border-blue-500/20 shadow-inner">
-          <Users className="w-4 h-4 text-blue-450" />
+      <div className="flex items-center gap-4 z-10 w-full mt-1.5">
+        <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 shadow-inner group-hover:scale-105 transition-transform duration-300">
+          <Users className="w-6 h-6 text-blue-455" />
         </div>
         
         {/* Animated digit counter */}
@@ -49,16 +49,16 @@ export const Counter: React.FC = () => {
           <AnimatePresence mode="popLayout">
             <motion.span 
               key={liveCount}
-              initial={{ y: 15, opacity: 0 }}
+              initial={{ y: 25, opacity: 0 }}
               animate={{ y: 0, opacity: 1, scale: shouldPulse ? 1.08 : 1 }}
-              exit={{ y: -15, opacity: 0 }}
+              exit={{ y: -25, opacity: 0 }}
               transition={{ 
                 type: "spring", 
                 stiffness: 400, 
                 damping: 20
               }}
               id="response-count-number" 
-              className="text-2xl md:text-3xl font-black text-white tracking-widest font-mono drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]"
+              className="text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-widest font-mono drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]"
             >
               {liveCount.toLocaleString()}
             </motion.span>

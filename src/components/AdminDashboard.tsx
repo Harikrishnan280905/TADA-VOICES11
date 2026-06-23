@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { firebaseService } from '../services/firebase';
 import { SurveyResponse } from '../types';
-import { Search, Filter, Trash2, Download, LogOut, CheckCircle2, AlertCircle, Users } from 'lucide-react';
+import { Search, Filter, Trash2, Download, LogOut, CheckCircle2, AlertCircle, Users, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import ExcelJS from 'exceljs';
 
 interface AdminDashboardProps {
@@ -18,6 +18,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+  
   // Real-time listener for responses
   useEffect(() => {
     const unsubscribe = firebaseService.subscribeToResponses((updatedResponses) => {
@@ -25,6 +29,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     });
     return () => unsubscribe();
   }, []);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, opinionFilter, designationFilter]);
 
   const handleDelete = async (id: string) => {
     setIsDeletingId(id);
@@ -59,7 +68,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       if (resp.changesNeeded === 'other_suggestions') {
         return resp.otherSuggestion || '';
       }
-      return 'Changes Needed';
+      return 'Changes Needed in UATT 2.0';
     }
     return '';
   };
@@ -97,6 +106,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
     return matchesSearch && matchesOpinion && matchesDesignation;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredResponses.length / ITEMS_PER_PAGE));
+  const paginatedResponses = filteredResponses.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   // Export to Excel using exceljs
   const handleExportExcel = async () => {
@@ -323,8 +338,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-900/80 text-xs text-slate-300">
-              {filteredResponses.length > 0 ? (
-                filteredResponses.map((item) => (
+              {paginatedResponses.length > 0 ? (
+                paginatedResponses.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-900/30 transition-colors">
                     <td className="py-3 px-4 font-mono select-all text-blue-400">
                       {item.phoneNumber}
@@ -378,7 +393,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={11} className="py-12 text-center text-blue-300/45">
+                  <td colSpan={12} className="py-12 text-center text-blue-300/45">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <AlertCircle className="w-8 h-8 opacity-45" />
                       <span>{t.noResponses}</span>
@@ -390,6 +405,87 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           </table>
         </div>
       </div>
+
+      {/* Pagination Controls */}
+      {filteredResponses.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-slate-900/30 border border-emerald-500/10 rounded-xl">
+          <div className="text-xs text-slate-400">
+            Showing <strong className="text-white">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</strong> to{" "}
+            <strong className="text-white">
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredResponses.length)}
+            </strong>{" "}
+            of <strong className="text-white">{filteredResponses.length}</strong> entries
+          </div>
+
+          <div className="flex items-center gap-1">
+            {/* First Page */}
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+              className="p-2 rounded bg-[#030815] border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
+              title="First Page"
+            >
+              <ChevronsLeft className="w-4 h-4" />
+            </button>
+
+            {/* Prev Page */}
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded bg-[#030815] border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
+              title="Previous Page"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1 mx-1.5">
+              {Array.from({ length: totalPages }, (_, idx) => idx + 1)
+                .filter((p) => Math.abs(p - currentPage) <= 2 || p === 1 || p === totalPages)
+                .map((p, idx, arr) => {
+                  const isCurrent = p === currentPage;
+                  const isGap = idx > 0 && p - arr[idx - 1] > 1;
+
+                  return (
+                    <React.Fragment key={p}>
+                      {isGap && <span className="text-slate-600 text-xs px-1">...</span>}
+                      <button
+                        onClick={() => setCurrentPage(p)}
+                        className={`min-w-8 h-8 px-2 rounded font-mono text-xs font-bold transition-all cursor-pointer ${
+                          isCurrent
+                            ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 border border-transparent shadow-[0_2px_8px_rgba(16,185,129,0.25)]"
+                            : "bg-[#030815] border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    </React.Fragment>
+                  );
+                })}
+            </div>
+
+            {/* Next Page */}
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded bg-[#030815] border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
+              title="Next Page"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+
+            {/* Last Page */}
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded bg-[#030815] border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
+              title="Last Page"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Custom Yes-No Delete Confirmation Dialog */}
       {confirmDeleteId !== null && (

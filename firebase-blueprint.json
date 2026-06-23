@@ -18,6 +18,8 @@
         "changesNeeded": { "type": "string", "enum": ["villages_divided", "transfers_promotions", "other_suggestions"], "description": "If changes are needed, what sub-category is selected" },
         "otherSuggestion": { "type": "string", "description": "Free text other suggestions from the officer" },
         "email": { "type": "string", "description": "Verified Google authentication email string" },
+        "uid": { "type": "string", "description": "Firebase user UID" },
+        "googleDisplayName": { "type": "string", "description": "Verified Google display name" },
         "createdAt": { "type": "string", "description": "Timestamp ISO string of the submission" }
       },
       "required": ["id", "phoneNumber", "name", "designation", "district", "block", "headquarters", "villages", "distance", "opinion", "createdAt"]
